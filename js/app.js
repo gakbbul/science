@@ -322,11 +322,9 @@ class ChemApp {
       }
     });
 
-    // 시험 이벤트
+    // 시험 이벤트 (확인창 없이 즉시 메인 화면으로 이동)
     this.dom.quizBtnBackHome.addEventListener('click', () => {
-      if (confirm('시험을 중단하고 메인 화면으로 이동하시겠습니까?')) {
-        this.showView('home');
-      }
+      this.showView('home');
     });
 
     // 결과 화면 이벤트
