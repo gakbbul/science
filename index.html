@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>화학 내신 학습 | 구글 시트 연동 · 원소기호 · 분자식 · 이온식 암기 시스템</title>
+  
+  <!-- 웹폰트: Pretendard & Outfit -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ================= 1. 상단 글로벌 헤더 ================= -->
+  <header class="site-header">
+    <div class="header-inner">
+      <!-- 헤더 좌측: 브랜드 로고 및 타이틀 -->
+      <div class="header-left">
+        <div class="brand-icon-wrapper">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+          </svg>
+        </div>
+        <div class="brand-info">
+          <div class="brand-title-row">
+            <h1 class="brand-title">화학 내신 학습</h1>
+            <span class="brand-badge">모바일 · PC</span>
+          </div>
+          <p class="brand-desc">플래시카드 & 실전 시험 시스템</p>
+        </div>
+      </div>
+
+      <!-- 헤더 중앙: 카테고리 알약 탭 -->
+      <nav class="header-center" aria-label="학습 카테고리">
+        <div class="pill-nav">
+          <button type="button" class="nav-tab active" data-tab="all">전체</button>
+          <button type="button" class="nav-tab" data-tab="원소기호">원소기호</button>
+          <button type="button" class="nav-tab" data-tab="화학식">화학식</button>
+          <button type="button" class="nav-tab" data-tab="이온식">이온식</button>
+        </div>
+      </nav>
+
+      <!-- 헤더 우측: 시트 아이콘 버튼들 & 세트 선택기 (텍스트 사용 금지) -->
+      <div class="header-right">
+        <div class="header-actions-group">
+          <!-- 1. 구글 스프레드시트 바로가기 아이콘 (텍스트 없음) -->
+          <a href="https://docs.google.com/spreadsheets/d/106KM_qCb7Yp0GsnD35vjGV-fRYGnhxZwOQRZC3Qh2JM/edit?usp=sharing" target="_blank" class="header-icon-action-btn" title="구글 스프레드시트 바로가기" aria-label="구글 스프레드시트 바로가기">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <line x1="10" y1="9" x2="8" y2="9"></line>
+            </svg>
+          </a>
+
+          <!-- 2. 스프레드시트 데이터 새로고침 아이콘 (텍스트 없음) -->
+          <button type="button" id="btn-sync-sheet" class="header-icon-action-btn btn-sync-refresh" title="스프레드시트 새로고침" aria-label="스프레드시트 새로고침">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="header-set-picker">
+          <span class="set-picker-label">세트:</span>
+          <select id="set-header-select" class="set-dropdown" title="학습 세트 선택">
+            <!-- JS 동적 생성 -->
+          </select>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= 2. 메인 컨텐츠 영역 ================= -->
+  <main class="main-wrapper">
+
+    <!-- ---------------- [VIEW 1: 대시보드 홈] ---------------- -->
+    <section id="view-home" class="view-section active">
+
+      <!-- 복수 선택 학습 및 시험 카드 -->
+      <div class="control-card">
+        <div class="control-card-header">
+          <div>
+            <h2 class="section-title">복수 선택 학습 및 시험</h2>
+            <p class="section-subtitle">원하는 세트를 선택하고 학습 방향을 지정하세요</p>
+          </div>
+          <button type="button" id="btn-select-all-units" class="btn-select-all">모두 선택</button>
+        </div>
+
+        <!-- 단원 칩 필터 목록 -->
+        <div id="unit-chips-container" class="chips-container">
+          <!-- JS 동적 생성 -->
+        </div>
+
+        <!-- 양방향 학습 모드 설정 바 -->
+        <div class="direction-control-bar">
+          <div class="direction-label-group">
+            <span class="direction-icon">⇄</span>
+            <label for="study-direction-select" class="direction-title">학습 및 시험 방향 설정:</label>
+          </div>
+          <select id="study-direction-select" class="direction-select">
+            <option value="name_to_formula">기호/화학식을 맞히기</option>
+            <option value="formula_to_name">이름을 맞히기</option>
+            <option value="mixed">방향 랜덤</option>
+            <option value="element_to_atomic">원소 번호 맞히기</option>
+            <option value="atomic_to_element">원소 번호로 원소 맞히기</option>
+          </select>
+        </div>
+
+        <!-- 메인 2개 액션 버튼 -->
+        <div class="action-buttons-grid">
+          <button type="button" id="btn-start-flashcards" class="btn-main-action btn-study-action">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+            </svg>
+            선택 항목 학습 (플래시카드)
+          </button>
+          <button type="button" id="btn-start-quiz" class="btn-main-action btn-quiz-action">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+              <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+              <path d="M4 22h16"/>
+              <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+              <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+              <path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/>
+            </svg>
+            선택 항목 시험 (자체 키보드)
+          </button>
+        </div>
+      </div>
+
+      <!-- 과별 및 세트 세부 메뉴 리스트 (클릭 시 표 펼침) -->
+      <section class="sub-menu-section">
+        <div class="sub-menu-header-row">
+          <h3 class="sub-menu-header">과별 및 세트 세부 메뉴</h3>
+          <span class="sub-menu-guide">💡 세트 카드를 클릭하면 포함된 원소/화학식 목록 표가 펼쳐집니다</span>
+        </div>
+        <div id="unit-list-container" class="unit-list">
+          <!-- JS 동적 생성 -->
+        </div>
+      </section>
+    </section>
+
+    <!-- ---------------- [VIEW 2: 플래시카드 학습] ---------------- -->
+    <section id="view-flashcard" class="view-section">
+      <div class="view-top-bar">
+        <button type="button" id="fc-btn-back-home" class="btn-back-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          목록으로
+        </button>
+
+        <!-- 학습 중 실시간 방향 변경 셀렉터 -->
+        <div class="in-study-direction-wrapper">
+          <label for="fc-direction-select" class="in-study-label">⇄ 방향:</label>
+          <select id="fc-direction-select" class="nav-direction-select" title="학습 중 방향 변경">
+            <option value="name_to_formula">기호/화학식을 맞히기</option>
+            <option value="formula_to_name">이름을 맞히기</option>
+            <option value="mixed">방향 랜덤</option>
+            <option value="element_to_atomic">원소 번호 맞히기</option>
+            <option value="atomic_to_element">원소 번호로 원소 맞히기</option>
+          </select>
+        </div>
+
+        <div class="progress-info">
+          <span id="fc-progress-text" class="progress-text">1 / 10</span>
+          <div class="progress-bar-track">
+            <div id="fc-progress-bar" class="progress-bar-fill" style="width: 10%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3D 회전 플래시카드 -->
+      <div class="flashcard-stage">
+        <div id="fc-card" class="flashcard" title="클릭하거나 스페이스바를 누르면 뒤집힙니다">
+          <!-- 앞면 -->
+          <div class="card-face card-face-front">
+            <div class="card-top-row">
+              <span id="fc-front-category" class="card-badge element">원소기호</span>
+              <button type="button" id="fc-btn-tts" class="fc-tts-btn" title="음성 읽기">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+              </button>
+            </div>
+            <div class="card-main-content">
+              <h3 id="fc-front-name" class="card-title">수소</h3>
+              <p id="fc-front-hint" class="card-sub-hint" style="display: none;"></p>
+            </div>
+            <div class="card-footer-tip">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+              </svg>
+              카드를 탭하여 정답 확인하기
+            </div>
+          </div>
+
+          <!-- 뒷면 -->
+          <div class="card-face card-face-back">
+            <span class="card-badge molecule">정답 확인</span>
+            <div class="card-main-content">
+              <div id="fc-back-formula" class="formula-display">H</div>
+              <p id="fc-back-desc" class="card-back-desc" style="display: none;"></p>
+            </div>
+            <div class="card-footer-tip">
+              다시 탭하면 문제 면으로 회전합니다
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 플래시카드 하단 컨트롤 바 -->
+      <div class="fc-controls-wrapper">
+        <div class="fc-nav-row">
+          <button type="button" id="fc-btn-prev" class="btn-nav-card">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            이전
+          </button>
+          <button type="button" id="fc-btn-flip" class="btn-flip-card">
+            🔄 카드 뒤집기 (Space)
+          </button>
+          <button type="button" id="fc-btn-next" class="btn-nav-card">
+            다음
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
+
+        <div class="fc-feedback-row">
+          <button type="button" id="fc-btn-need-review" class="btn-feedback review">
+            🔁 다시 볼래요
+          </button>
+          <button type="button" id="fc-btn-remember" class="btn-feedback remember">
+            ✅ 외웠어요!
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------------- [VIEW 3: 실전 시험] ---------------- -->
+    <section id="view-quiz" class="view-section">
+      <div class="quiz-container">
+        <div class="view-top-bar">
+          <button type="button" id="quiz-btn-back-home" class="btn-back-link">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            시험 나가기
+          </button>
+
+          <!-- 시험 중 실시간 방향 변경 셀렉터 -->
+          <div class="in-study-direction-wrapper">
+            <label for="quiz-direction-select" class="in-study-label">⇄ 방향:</label>
+            <select id="quiz-direction-select" class="nav-direction-select" title="시험 방향 변경">
+              <option value="name_to_formula">기호/화학식을 맞히기</option>
+              <option value="formula_to_name">이름을 맞히기</option>
+              <option value="mixed">방향 랜덤</option>
+              <option value="element_to_atomic">원소 번호 맞히기</option>
+              <option value="atomic_to_element">원소 번호로 원소 맞히기</option>
+            </select>
+          </div>
+
+          <div class="progress-info">
+            <span id="quiz-progress-text" class="progress-text">1 / 15</span>
+            <div class="progress-bar-track">
+              <div id="quiz-progress-bar" class="progress-bar-fill" style="width: 10%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 시험 문제 출제 카드 -->
+        <div class="quiz-question-box">
+          <span id="quiz-question-category" class="card-badge ion">이온식</span>
+          <h2 id="quiz-question-name" class="quiz-q-name">황산 이온</h2>
+          <p id="quiz-question-hint" class="quiz-q-hint">아래 자체 키보드로 정확한 답을 입력하세요</p>
+        </div>
+
+        <!-- 힌트 토글 -->
+        <div class="quiz-hint-toggle-bar">
+          <button type="button" id="quiz-btn-hint" class="btn-text-hint">💡 힌트 보기</button>
+        </div>
+        <div id="quiz-hint-box" class="quiz-hint-box"></div>
+
+        <!-- 입력창 -->
+        <div class="quiz-input-wrapper">
+          <input 
+            type="text" 
+            id="quiz-answer-input" 
+            class="quiz-input" 
+            placeholder="답안 입력 (가상 키보드 또는 물리 키보드)" 
+            autocomplete="off" 
+            autocorrect="off" 
+            autocapitalize="off" 
+            spellcheck="false" 
+          />
+        </div>
+
+        <!-- 자체 전용 화학 가상 키보드 -->
+        <div id="virtual-keyboard-container"></div>
+      </div>
+    </section>
+
+    <!-- ---------------- [VIEW 4: 시험 결과 화면] ---------------- -->
+    <section id="view-result" class="view-section">
+      <div class="result-card">
+        <div class="result-header">
+          <div class="result-trophy">🏆</div>
+          <h2 id="result-score-number" class="result-title">100점</h2>
+          <p id="result-score-percent" class="result-sub">정답률 100%</p>
+        </div>
+
+        <div class="result-stats-grid">
+          <div class="stat-box highlight">
+            <div id="result-total-count" class="stat-value">15문제</div>
+            <div class="stat-label">총 문항수</div>
+          </div>
+          <div class="stat-box">
+            <div id="result-correct-count" class="stat-value" style="color: #10b981;">15문제</div>
+            <div class="stat-label">맞힌 문제</div>
+          </div>
+          <div class="stat-box">
+            <div id="result-wrong-count" class="stat-value" style="color: #ef4444;">0문제</div>
+            <div class="stat-label">틀린 문제</div>
+          </div>
+        </div>
+
+        <div class="result-actions">
+          <button type="button" id="result-btn-retry-wrong" class="btn-main-action btn-study-action">
+            ❌ 오답만 다시 시험
+          </button>
+          <button type="button" id="result-btn-retry-all" class="btn-main-action btn-quiz-action">
+            🔄 전체 다시 시험
+          </button>
+        </div>
+        <div style="text-align: center; margin-bottom: 24px;">
+          <button type="button" id="result-btn-home" class="btn-back-link" style="padding: 10px 24px; font-size: 0.95rem;">
+            대시보드 메인으로 돌아가기
+          </button>
+        </div>
+
+        <div class="result-details-section">
+          <h3 class="result-details-title">문항별 상세 채점 결과</h3>
+          <div id="result-details-list" class="result-details-list"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="quiz-feedback-toast" class="quiz-toast">정답입니다!</div>
+
+  <!-- 스크립트 연결 -->
+  <script src="js/data.js"></script>
+  <script src="js/keyboard.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
