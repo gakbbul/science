@@ -241,6 +241,15 @@ class ChemApp {
       });
     });
 
+    // 헤더 브랜드 클릭 시 홈 화면으로 복귀
+    const brandLeft = document.querySelector('.header-left');
+    if (brandLeft) {
+      brandLeft.style.cursor = 'pointer';
+      brandLeft.addEventListener('click', () => {
+        this.showView('home');
+      });
+    }
+
     // 헤더 드롭다운 선택
     this.dom.setHeaderSelect.addEventListener('change', (e) => {
       const val = e.target.value;
@@ -251,6 +260,7 @@ class ChemApp {
       }
       this.renderCategoryChips();
       this.renderUnitList();
+      this.showView('home');
     });
 
     // 모두 선택 버튼
@@ -353,6 +363,8 @@ class ChemApp {
     this.selectedUnits = new Set(filtered.map(u => u.name));
     this.renderCategoryChips();
     this.renderUnitList();
+    // 시험이나 학습 중에도 메인 화면으로 즉시 나가기
+    this.showView('home');
   }
 
   getFilteredUnits() {
