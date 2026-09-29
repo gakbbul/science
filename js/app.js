@@ -570,9 +570,11 @@ class ChemApp {
    */
   generateProblem(item, direction) {
     let mode = direction;
+    const atomicNum = item.atomicNumber || (window.KNOWN_ATOMIC_NUMBERS && (window.KNOWN_ATOMIC_NUMBERS[item.formula] || window.KNOWN_ATOMIC_NUMBERS[item.name])) || null;
+
     if (mode === 'mixed') {
       const options = ['name_to_formula', 'formula_to_name'];
-      if (item.atomicNumber) {
+      if (atomicNum) {
         options.push('element_to_atomic');
       }
       mode = options[Math.floor(Math.random() * options.length)];
@@ -584,28 +586,28 @@ class ChemApp {
         question: item.formula,
         answer: item.name,
         questionSub: `${item.category} (${item.unit})`,
-        answerSub: item.atomicNumber ? `원자 번호: ${item.atomicNumber}번` : '',
+        answerSub: atomicNum ? `원자 번호: ${atomicNum}번` : '',
         hint: `한글 명칭을 입력하세요. (${item.unit})`,
         rawItem: item
       };
-    } else if (mode === 'element_to_atomic' && item.atomicNumber) {
+    } else if (mode === 'element_to_atomic' && atomicNum) {
       return {
         mode: 'element_to_atomic',
         question: `${item.name} (${item.formula})`,
-        answer: String(item.atomicNumber),
+        answer: String(atomicNum),
         questionSub: `원소 번호 맞히기`,
-        answerSub: `원자 번호: ${item.atomicNumber}번`,
+        answerSub: `원자 번호: ${atomicNum}번`,
         hint: `${item.name}의 원자 번호(숫자)를 입력하세요`,
         rawItem: item
       };
-    } else if (mode === 'atomic_to_element' && item.atomicNumber) {
+    } else if (mode === 'atomic_to_element' && atomicNum) {
       return {
         mode: 'atomic_to_element',
-        question: String(item.atomicNumber),
+        question: String(atomicNum),
         answer: item.formula,
         questionSub: `원소기호 맞히기`,
         answerSub: '',
-        hint: `${item.atomicNumber}번 원소의 기호를 입력하세요`,
+        hint: `${atomicNum}번 원소의 기호를 입력하세요`,
         rawItem: item
       };
     } else {
@@ -614,8 +616,8 @@ class ChemApp {
         mode: 'name_to_formula',
         question: item.name,
         answer: item.formula,
-        questionSub: item.atomicNumber ? `원소기호 (원자번호 ${item.atomicNumber}번)` : `${item.category} (${item.unit})`,
-        answerSub: item.description || '',
+        questionSub: atomicNum ? `원소기호 (원자번호 ${atomicNum}번)` : `${item.category} (${item.unit})`,
+        answerSub: item.description || (atomicNum ? `원자 번호 ${atomicNum}번` : ''),
         hint: `화학식 또는 원소기호를 입력하세요`,
         rawItem: item
       };
