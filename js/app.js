@@ -832,34 +832,49 @@ class ChemApp {
     this.dom.quizInput.value = '';
     this.dom.quizInput.setAttribute('inputmode', 'none');
 
-    // 카테고리 및 모드에 맞춰 가상 키보드 툴바 스마트 조정
+    // -----------------------------------------------------------------
+    // 각 학습/문제 유형에 맞춘 전용 가상 키보드 레이아웃 스마트 적용
+    // 1) 원소 번호 맞히기 (답: 숫자): 쿼티 숨기고 오직 숫자 키패드만 표시!
+    // 2) 원소기호 맞히기 (답: 원소기호): 숫자 키보드 완전히 빼고 영문 쿼티만 표시!
+    // 3) 이름 맞히기 (답: 한글 명칭): 상단 툴바 모두 빼고 오직 한글 쿼티만 표시!
+    // 4) 분자식 맞히기: 숫자/이온 빼고 분자식 첨자(₁~₀)와 영문 쿼티만 표시!
+    // 5) 이온식 맞히기: 숫자 빼고 이온 전하(⁺, ⁻)와 분자식 첨자, 영문 쿼티만 표시!
+    // -----------------------------------------------------------------
     const raw = problem.rawItem || {};
     const cat = raw.category || '';
-    const isAtomicMode = (problem.mode === 'element_to_atomic' || problem.mode === 'atomic_to_element');
-    const isElement = cat.includes('원소') || isAtomicMode;
-    const isIon = cat.includes('이온');
-    const isMolecule = cat.includes('화학') || cat.includes('분자');
 
-    if (isElement) {
-      // 원소기호 및 원소번호 시험: 이온 전하 & 첨자 불필요, 숫자만 표시
-      this.keyboard.setToolbarConfig({ showNum: true, showIon: false, showSub: false });
-    } else if (isMolecule) {
-      // 분자식: 이온 전하 불필요, 분자식 첨자와 숫자만 표시
-      this.keyboard.setToolbarConfig({ showNum: true, showIon: false, showSub: true });
-    } else if (isIon) {
-      // 이온식: 이온 전하, 첨자, 숫자 모두 표시
-      this.keyboard.setToolbarConfig({ showNum: true, showIon: true, showSub: true });
-    } else {
-      const hasIonChar = problem.answer && (problem.answer.includes('+') || problem.answer.includes('-') || problem.answer.includes('⁺') || problem.answer.includes('⁻'));
-      this.keyboard.setToolbarConfig({ showNum: true, showIon: hasIonChar, showSub: true });
-    }
-
-    // 모드에 따라 키보드 자동 전환 (이름 맞히기일 때는 한글 자판, 기호일 때는 영문 대문자)
-    if (problem.mode === 'formula_to_name') {
+    if (problem.mode === 'element_to_atomic') {
+      // 1) 원소 번호 맞히기: 오직 숫자 키패드만 남김
+      this.keyboard.setDisplayMode('numpad');
+    } else if (problem.mode === 'formula_to_name') {
+      // 3) 이름 맞히기: 오직 한글 쿼티만 남김 (상단 툴바 모두 숨김)
+      this.keyboard.setDisplayMode('qwerty');
       this.keyboard.setKeyboardMode('ko');
+      this.keyboard.setToolbarConfig({ showNum: false, showIon: false, showSub: false });
     } else {
+      // 기호/화학식 맞히기 모드 (기본 영문)
+      this.keyboard.setDisplayMode('qwerty');
       this.keyboard.setKeyboardMode('en');
       this.keyboard.toggleShift(true);
+
+      const isAtomicToElement = (problem.mode === 'atomic_to_element');
+      const isElement = cat.includes('원소') || isAtomicToElement;
+      const isMolecule = cat.includes('분자') || cat.includes('화학');
+      const isIon = cat.includes('이온');
+
+      if (isElement) {
+        // 2) 원소기호 맞히기: 숫자 키보드 완전히 빼고 영문 쿼티만 남김!
+        this.keyboard.setToolbarConfig({ showNum: false, showIon: false, showSub: false });
+      } else if (isMolecule) {
+        // 4) 분자식: 숫자/이온 빼고 분자식 첨자만 활성화
+        this.keyboard.setToolbarConfig({ showNum: false, showIon: false, showSub: true });
+      } else if (isIon) {
+        // 5) 이온식: 숫자 빼고 이온 전하 & 첨자만 활성화
+        this.keyboard.setToolbarConfig({ showNum: false, showIon: true, showSub: true });
+      } else {
+        const hasIonChar = problem.answer && (problem.answer.includes('+') || problem.answer.includes('-') || problem.answer.includes('⁺') || problem.answer.includes('⁻'));
+        this.keyboard.setToolbarConfig({ showNum: false, showIon: hasIonChar, showSub: true });
+      }
     }
 
     this.dom.quizInput.focus();

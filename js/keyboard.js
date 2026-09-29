@@ -12,10 +12,11 @@ class ChemistryKeyboard {
     this.container = options.container || document.getElementById('virtual-keyboard-container');
     this.isShift = true;
     this.keyboardMode = 'en'; // 'en' | 'ko'
+    this.displayMode = 'qwerty'; // 'qwerty' | 'numpad'
     this.toolbarConfig = {
-      showNum: true,
-      showIon: true,
-      showSub: true
+      showNum: false,
+      showIon: false,
+      showSub: false
     };
     this.onSubmit = options.onSubmit || (() => {});
     this.onInput = options.onInput || (() => {});
@@ -33,6 +34,13 @@ class ChemistryKeyboard {
   init() {
     if (!this.container) return;
     this.render();
+  }
+
+  setDisplayMode(mode) {
+    if (this.displayMode !== mode) {
+      this.displayMode = mode;
+      this.render();
+    }
   }
 
   setToolbarConfig(config = {}) {
@@ -58,10 +66,53 @@ class ChemistryKeyboard {
 
   setKeyboardMode(mode) {
     this.keyboardMode = mode;
-    this.render();
+    if (this.displayMode === 'qwerty') {
+      this.render();
+    }
   }
 
   render() {
+    if (this.displayMode === 'numpad') {
+      // ----------------------------------------------------
+      // 원소 번호 맞히기 전용: 숫자 키패드만 표시 (초간결 레이아웃)
+      // ----------------------------------------------------
+      this.container.innerHTML = `
+        <div class="chem-keyboard chem-keyboard-numpad">
+          <div class="kb-numpad-area">
+            <div class="kb-row">
+              <button type="button" class="kb-key kb-numpad-key" data-char="1">1</button>
+              <button type="button" class="kb-key kb-numpad-key" data-char="2">2</button>
+              <button type="button" class="kb-key kb-numpad-key" data-char="3">3</button>
+            </div>
+            <div class="kb-row">
+              <button type="button" class="kb-key kb-numpad-key" data-char="4">4</button>
+              <button type="button" class="kb-key kb-numpad-key" data-char="5">5</button>
+              <button type="button" class="kb-key kb-numpad-key" data-char="6">6</button>
+            </div>
+            <div class="kb-row">
+              <button type="button" class="kb-key kb-numpad-key" data-char="7">7</button>
+              <button type="button" class="kb-key kb-numpad-key" data-char="8">8</button>
+              <button type="button" class="kb-key kb-numpad-key" data-char="9">9</button>
+            </div>
+            <div class="kb-row">
+              <button type="button" class="kb-key kb-backspace" id="kb-btn-backspace" title="지우기">
+                ⌫ 지우기
+              </button>
+              <button type="button" class="kb-key kb-numpad-key" data-char="0">0</button>
+              <button type="button" class="kb-key kb-enter" id="kb-btn-enter" title="제출">
+                제출 ↵
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+      this.bindEvents();
+      return;
+    }
+
+    // ----------------------------------------------------
+    // 표준 쿼티 레이아웃 (영문 / 한글 + 맞춤형 툴바)
+    // ----------------------------------------------------
     const qRow1 = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'];
     const qRow2 = ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'];
     const qRow3 = ['Z', 'X', 'C', 'V', 'B', 'N', 'M'];
@@ -80,7 +131,7 @@ class ChemistryKeyboard {
 
     this.container.innerHTML = `
       <div class="chem-keyboard">
-        <!-- 상단 빠른 기호/숫자 바 (원소 번호, 전하, 아래첨자) -->
+        <!-- 상단 빠른 기호/숫자 바 (필요한 경우에만 노출) -->
         <div class="kb-quick-toolbar" style="display: ${anyToolbarVisible ? 'block' : 'none'}">
           <!-- 1. 원소 번호 및 숫자 -->
           <div class="kb-toolbar-row kb-toolbar-row-num" style="display: ${this.toolbarConfig.showNum ? 'flex' : 'none'}">

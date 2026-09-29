@@ -1326,6 +1326,61 @@ button {
   font-size: 1.25rem;
 }
 
+/* 원소 번호 맞히기 전용 텐키 키패드 스타일 */
+.chem-keyboard-numpad {
+  max-width: 380px;
+  margin: 0 auto;
+}
+
+.kb-numpad-area {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.kb-numpad-key {
+  height: 52px;
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #1e293b;
+  background: #ffffff;
+  border-radius: 12px;
+  font-family: var(--font-chem);
+}
+
+.chem-keyboard-numpad .kb-backspace {
+  height: 52px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  background: #fee2e2;
+  color: #b91c1c;
+  border-radius: 12px;
+}
+
+.chem-keyboard-numpad .kb-enter {
+  height: 52px;
+  font-size: 1.02rem;
+  font-weight: 800;
+  border-radius: 12px;
+}
+
+@media (max-width: 520px) {
+  .chem-keyboard-numpad {
+    max-width: 100%;
+  }
+  .kb-numpad-key {
+    height: 46px;
+    font-size: 1.35rem;
+    border-radius: 8px;
+  }
+  .chem-keyboard-numpad .kb-backspace,
+  .chem-keyboard-numpad .kb-enter {
+    height: 46px;
+    font-size: 0.88rem;
+    border-radius: 8px;
+  }
+}
+
 .kb-shift {
   flex: 1.4;
   background: #f1f5f9;
