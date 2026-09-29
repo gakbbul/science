@@ -1121,37 +1121,38 @@ button {
   background: var(--bg-card);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
-  padding: 24px 28px;
+  padding: 16px 20px;
   text-align: center;
   box-shadow: var(--shadow-sm);
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
 .quiz-q-name {
-  font-size: 2.2rem;
+  font-size: 2rem;
   font-weight: 800;
   color: var(--text-main);
-  margin: 10px 0 6px;
+  margin: 6px 0 4px;
+  line-height: 1.2;
 }
 
 .quiz-q-hint {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: var(--text-muted);
 }
 
 .quiz-input-wrapper {
-  margin-bottom: 18px;
+  margin-bottom: 12px;
 }
 
 .quiz-input {
   width: 100%;
-  height: 64px;
+  height: 56px;
   border-radius: var(--radius-md);
   border: 2px solid #cbd5e1;
   background: #ffffff;
-  padding: 0 20px;
+  padding: 0 16px;
   font-family: var(--font-chem);
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: #1d4ed8;
   text-align: center;
@@ -1159,6 +1160,7 @@ button {
   outline: none;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03);
   transition: all 0.2s ease;
+  caret-color: #2563eb;
 }
 
 .quiz-input:focus {
@@ -1167,39 +1169,10 @@ button {
 }
 
 .quiz-input::placeholder {
-  font-size: 1.05rem;
+  font-size: 0.98rem;
   color: #94a3b8;
   font-family: var(--font-family);
   font-weight: 500;
-}
-
-.quiz-hint-toggle-bar {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 8px;
-}
-
-.btn-text-hint {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--primary);
-  padding: 4px 8px;
-}
-
-.quiz-hint-box {
-  display: none;
-  background: #fffbeb;
-  border: 1px solid #fef3c7;
-  color: #92400e;
-  padding: 10px 16px;
-  border-radius: 10px;
-  font-size: 0.85rem;
-  margin-bottom: 16px;
-  text-align: center;
-}
-
-.quiz-hint-box.visible {
-  display: block;
 }
 
 .quiz-toast {
@@ -1704,46 +1677,106 @@ button {
     font-size: 0.88rem;
   }
 
-  /* 가상 키보드 모바일 폭 최적화 */
-  .chem-keyboard {
-    padding: 8px 6px;
-    border-radius: 16px;
+  /* ==========================================================================
+     시험 화면 모바일 원-스크린 최적화 (이름 + 입력창 + 가상키보드 한눈에 표시)
+     ========================================================================== */
+  .quiz-container {
+    max-width: 100%;
+    padding: 0;
   }
 
-  .kb-quick-toolbar {
-    padding: 6px 6px;
-    margin-bottom: 6px;
+  .quiz-container .view-top-bar {
+    margin-bottom: 8px;
+    gap: 6px;
   }
 
-  .kb-badge {
-    min-width: 65px;
-    font-size: 0.65rem;
+  .quiz-question-box {
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    border-radius: var(--radius-md);
   }
 
-  .kb-key {
-    height: 38px;
-    min-width: 26px;
-    font-size: 1.05rem;
-    border-radius: 6px;
-  }
-
-  .kb-key-num, .kb-key-sup, .kb-key-sub, .kb-key-symbol {
-    height: 30px;
-    min-width: 24px;
-    font-size: 0.95rem;
-  }
-
-  .kb-row {
-    gap: 3px;
-    margin-bottom: 4px;
-  }
-
-  .quiz-input {
-    height: 54px;
-    font-size: 1.5rem;
+  .quiz-question-box .card-badge {
+    padding: 2px 8px;
+    font-size: 0.72rem;
   }
 
   .quiz-q-name {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
+    margin: 4px 0 2px;
+    line-height: 1.15;
+  }
+
+  .quiz-q-hint {
+    font-size: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .quiz-input-wrapper {
+    margin-bottom: 8px;
+  }
+
+  .quiz-input {
+    height: 48px;
+    font-size: 1.45rem;
+    border-radius: 10px;
+    padding: 0 12px;
+  }
+
+  .quiz-input::placeholder {
+    font-size: 0.88rem;
+  }
+
+  /* 가상 키보드 모바일 원-스크린 최적화 */
+  .chem-keyboard {
+    padding: 6px 4px;
+    border-radius: 14px;
+    background: #e2e8f0;
+  }
+
+  .kb-quick-toolbar {
+    padding: 4px 6px;
+    margin-bottom: 4px;
+    border-radius: 10px;
+  }
+
+  .kb-toolbar-row {
+    margin-bottom: 3px;
+    gap: 4px;
+  }
+
+  .kb-badge {
+    min-width: 48px;
+    font-size: 0.62rem;
+    padding: 2px 4px;
+  }
+
+  .kb-key {
+    height: 36px;
+    min-width: 24px;
+    font-size: 1rem;
+    border-radius: 6px;
+    box-shadow: 0 1.5px 0 #cbd5e1;
+  }
+
+  .kb-key-num, .kb-key-sup, .kb-key-sub, .kb-key-symbol {
+    height: 28px;
+    min-width: 22px;
+    font-size: 0.92rem;
+  }
+
+  .kb-row {
+    gap: 2.5px;
+    margin-bottom: 3px;
+  }
+
+  .kb-letter, .kb-hangul {
+    font-size: 1.05rem;
+  }
+
+  .kb-shift, .kb-backspace, .kb-lang-toggle, .kb-clear, .kb-enter {
+    font-size: 0.78rem;
   }
 }

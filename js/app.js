@@ -174,8 +174,6 @@ class ChemApp {
       quizQuestionName: document.getElementById('quiz-question-name'),
       quizQuestionHint: document.getElementById('quiz-question-hint'),
       quizInput: document.getElementById('quiz-answer-input'),
-      quizBtnHint: document.getElementById('quiz-btn-hint'),
-      quizHintBox: document.getElementById('quiz-hint-box'),
       quizBtnBackHome: document.getElementById('quiz-btn-back-home'),
       quizFeedbackToast: document.getElementById('quiz-feedback-toast'),
 
@@ -329,12 +327,6 @@ class ChemApp {
       if (confirm('시험을 중단하고 메인 화면으로 이동하시겠습니까?')) {
         this.showView('home');
       }
-    });
-
-    this.dom.quizBtnHint.addEventListener('click', () => {
-      const current = this.activeList[this.currentIndex];
-      this.dom.quizHintBox.textContent = current.hint || '추가 힌트가 없습니다.';
-      this.dom.quizHintBox.classList.toggle('visible');
     });
 
     // 결과 화면 이벤트
@@ -838,8 +830,29 @@ class ChemApp {
     this.dom.quizQuestionHint.textContent = `${this.getDirectionLabel(problem.mode)}: ${problem.hint}`;
 
     this.dom.quizInput.value = '';
-    this.dom.quizHintBox.classList.remove('visible');
-    this.dom.quizHintBox.textContent = '';
+    this.dom.quizInput.setAttribute('inputmode', 'none');
+
+    // 카테고리 및 모드에 맞춰 가상 키보드 툴바 스마트 조정
+    const raw = problem.rawItem || {};
+    const cat = raw.category || '';
+    const isAtomicMode = (problem.mode === 'element_to_atomic' || problem.mode === 'atomic_to_element');
+    const isElement = cat.includes('원소') || isAtomicMode;
+    const isIon = cat.includes('이온');
+    const isMolecule = cat.includes('화학') || cat.includes('분자');
+
+    if (isElement) {
+      // 원소기호 및 원소번호 시험: 이온 전하 & 첨자 불필요, 숫자만 표시
+      this.keyboard.setToolbarConfig({ showNum: true, showIon: false, showSub: false });
+    } else if (isMolecule) {
+      // 분자식: 이온 전하 불필요, 분자식 첨자와 숫자만 표시
+      this.keyboard.setToolbarConfig({ showNum: true, showIon: false, showSub: true });
+    } else if (isIon) {
+      // 이온식: 이온 전하, 첨자, 숫자 모두 표시
+      this.keyboard.setToolbarConfig({ showNum: true, showIon: true, showSub: true });
+    } else {
+      const hasIonChar = problem.answer && (problem.answer.includes('+') || problem.answer.includes('-') || problem.answer.includes('⁺') || problem.answer.includes('⁻'));
+      this.keyboard.setToolbarConfig({ showNum: true, showIon: hasIonChar, showSub: true });
+    }
 
     // 모드에 따라 키보드 자동 전환 (이름 맞히기일 때는 한글 자판, 기호일 때는 영문 대문자)
     if (problem.mode === 'formula_to_name') {

@@ -286,14 +286,8 @@
         <div class="quiz-question-box">
           <span id="quiz-question-category" class="card-badge ion">이온식</span>
           <h2 id="quiz-question-name" class="quiz-q-name">황산 이온</h2>
-          <p id="quiz-question-hint" class="quiz-q-hint">아래 자체 키보드로 정확한 답을 입력하세요</p>
+          <p id="quiz-question-hint" class="quiz-q-hint">아래 가상 키보드로 답안을 입력하세요</p>
         </div>
-
-        <!-- 힌트 토글 -->
-        <div class="quiz-hint-toggle-bar">
-          <button type="button" id="quiz-btn-hint" class="btn-text-hint">💡 힌트 보기</button>
-        </div>
-        <div id="quiz-hint-box" class="quiz-hint-box"></div>
 
         <!-- 입력창 -->
         <div class="quiz-input-wrapper">
@@ -301,7 +295,8 @@
             type="text" 
             id="quiz-answer-input" 
             class="quiz-input" 
-            placeholder="답안 입력 (가상 키보드 또는 물리 키보드)" 
+            placeholder="가상 키보드로 입력" 
+            inputmode="none" 
             autocomplete="off" 
             autocorrect="off" 
             autocapitalize="off" 

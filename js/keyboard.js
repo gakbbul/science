@@ -12,6 +12,11 @@ class ChemistryKeyboard {
     this.container = options.container || document.getElementById('virtual-keyboard-container');
     this.isShift = true;
     this.keyboardMode = 'en'; // 'en' | 'ko'
+    this.toolbarConfig = {
+      showNum: true,
+      showIon: true,
+      showSub: true
+    };
     this.onSubmit = options.onSubmit || (() => {});
     this.onInput = options.onInput || (() => {});
     this.init();
@@ -20,16 +25,35 @@ class ChemistryKeyboard {
   setTarget(inputElement) {
     this.targetInput = inputElement;
     if (this.targetInput) {
-      // 터치 포커스 유지
-      this.targetInput.addEventListener('click', () => {
-        // 커서 위치
-      });
+      this.targetInput.setAttribute('inputmode', 'none');
+      this.targetInput.setAttribute('virtualkeyboardpolicy', 'manual');
     }
   }
 
   init() {
     if (!this.container) return;
     this.render();
+  }
+
+  setToolbarConfig(config = {}) {
+    if (config.showNum !== undefined) this.toolbarConfig.showNum = config.showNum;
+    if (config.showIon !== undefined) this.toolbarConfig.showIon = config.showIon;
+    if (config.showSub !== undefined) this.toolbarConfig.showSub = config.showSub;
+
+    if (!this.container) return;
+    const rowNum = this.container.querySelector('.kb-toolbar-row-num');
+    const rowIon = this.container.querySelector('.kb-toolbar-row-ion');
+    const rowSub = this.container.querySelector('.kb-toolbar-row-sub');
+    const toolbar = this.container.querySelector('.kb-quick-toolbar');
+
+    if (rowNum) rowNum.style.display = this.toolbarConfig.showNum ? 'flex' : 'none';
+    if (rowIon) rowIon.style.display = this.toolbarConfig.showIon ? 'flex' : 'none';
+    if (rowSub) rowSub.style.display = this.toolbarConfig.showSub ? 'flex' : 'none';
+
+    if (toolbar) {
+      const anyVisible = this.toolbarConfig.showNum || this.toolbarConfig.showIon || this.toolbarConfig.showSub;
+      toolbar.style.display = anyVisible ? 'block' : 'none';
+    }
   }
 
   setKeyboardMode(mode) {
@@ -52,20 +76,22 @@ class ChemistryKeyboard {
     const subscripts = ['₁', '₂', '₃', '₄', '₅', '₆', '₇', '₈', '₉', '₀'];
     const ions = ['⁺', '⁻', '²⁺', '²⁻', '³⁺', '³⁻'];
 
+    const anyToolbarVisible = this.toolbarConfig.showNum || this.toolbarConfig.showIon || this.toolbarConfig.showSub;
+
     this.container.innerHTML = `
       <div class="chem-keyboard">
         <!-- 상단 빠른 기호/숫자 바 (원소 번호, 전하, 아래첨자) -->
-        <div class="kb-quick-toolbar">
+        <div class="kb-quick-toolbar" style="display: ${anyToolbarVisible ? 'block' : 'none'}">
           <!-- 1. 원소 번호 및 숫자 -->
-          <div class="kb-toolbar-row">
-            <span class="kb-badge num">원소 번호 / 숫자</span>
+          <div class="kb-toolbar-row kb-toolbar-row-num" style="display: ${this.toolbarConfig.showNum ? 'flex' : 'none'}">
+            <span class="kb-badge num">숫자</span>
             <div class="kb-keys-scroll">
               ${numbers.map(n => `<button type="button" class="kb-key kb-key-num" data-char="${n}">${n}</button>`).join('')}
             </div>
           </div>
 
           <!-- 2. 이온 전하(위첨자) -->
-          <div class="kb-toolbar-row">
+          <div class="kb-toolbar-row kb-toolbar-row-ion" style="display: ${this.toolbarConfig.showIon ? 'flex' : 'none'}">
             <span class="kb-badge ion">이온 전하</span>
             <div class="kb-keys-scroll">
               ${ions.map(ion => `<button type="button" class="kb-key kb-key-sup" data-char="${ion}">${ion}</button>`).join('')}
@@ -73,7 +99,7 @@ class ChemistryKeyboard {
           </div>
 
           <!-- 3. 분자식(아래첨자) 및 괄호 -->
-          <div class="kb-toolbar-row">
+          <div class="kb-toolbar-row kb-toolbar-row-sub" style="display: ${this.toolbarConfig.showSub ? 'flex' : 'none'}">
             <span class="kb-badge sub">분자식 첨자</span>
             <div class="kb-keys-scroll">
               ${subscripts.map(s => `<button type="button" class="kb-key kb-key-sub" data-char="${s}">${s}</button>`).join('')}
